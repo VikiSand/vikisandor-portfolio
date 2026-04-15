@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching — Viki SANDOR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>:root { --page-accent: #E8008A; --page-accent-text: #ffffff; }</style>
+</head>
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <div class="page-wrapper">
+
+        <!-- ── Left panel ─────────────────────────────────────── -->
+        <aside class="left-panel">
+            <a href="index.html#about-section" class="site-title-link">
+                <h1>VIKI sandor</h1>
+            </a>
+
+            <nav>
+                <div class="nav-links">
+                    <a href="index.html"    class="nav-all"><span>All</span></a>
+                    <a href="projects.html" class="nav-projects"><span>Projects</span></a>
+                    <a href="teaching.html" class="nav-teaching active"><span>Teaching</span></a>
+                </div>
+            </nav>
+
+            <div class="sidebar-filters">
+                <input class="search-input" id="searchInput" type="text" placeholder="Search…" autocomplete="off">
+                <div class="sidebar-label">
+                    Tags
+                    <button class="filter-reset" id="filterReset">Reset</button>
+                </div>
+                <div class="tag-filters" id="tagFilters"></div>
+            </div>
+        </aside>
+
+        <!-- ── Right content ──────────────────────────────────── -->
+        <div class="right-content">
+            <main>
+                <div class="projects-grid" id="projectsGrid"></div>
+                <div class="empty-state" id="emptyState">
+                    <h3>No projects found</h3>
+                    <p>Try adjusting your filters</p>
+                </div>
+            </main>
+
+            <footer>
+                <p>&copy; 2026 Viki Sandor</p>
+                <p>Architecture · Research · Teaching</p>
+            </footer>
+        </div>
+
+    </div><!-- .page-wrapper -->
+
+    <script src="projects-data.js"></script>
+    <script>
+        const pageProjects = projects.filter(p => p.category === 'teaching');
+        let activeTags = new Set();
+
+        const projectsGrid = document.getElementById('projectsGrid');
+        const tagFilters   = document.getElementById('tagFilters');
+        const emptyState   = document.getElementById('emptyState');
+        const filterReset  = document.getElementById('filterReset');
+        const searchInput  = document.getElementById('searchInput');
+
+        searchInput.addEventListener('input', () => renderProjects());
+
+        function generateTagFilters() {
+            const tagCount = {};
+            pageProjects.forEach(p => p.tags.forEach(t => { tagCount[t] = (tagCount[t] || 0) + 1; }));
+            tagFilters.innerHTML = Object.keys(tagCount).sort().map(tag =>
+                `<button class="tag-filter${activeTags.has(tag) ? ' active' : ''}" data-tag="${tag}">${tag} <span class="tag-count">(${tagCount[tag]})</span></button>`
+            ).join('');
+        }
+
+        function updateResetBtn() {
+            filterReset.classList.toggle('visible', activeTags.size > 0);
+        }
+
+        tagFilters.addEventListener('click', e => {
+            if (!e.target.classList.contains('tag-filter')) return;
+            const tag = e.target.dataset.tag;
+            activeTags.has(tag) ? activeTags.delete(tag) : activeTags.add(tag);
+            e.target.classList.toggle('active', activeTags.has(tag));
+            updateResetBtn();
+            renderProjects();
+        });
+
+        filterReset.addEventListener('click', () => {
+            activeTags.clear();
+            searchInput.value = '';
+            document.querySelectorAll('.tag-filter').forEach(b => b.classList.remove('active'));
+            updateResetBtn();
+            renderProjects();
+        });
+
+        function ytId(url) {
+            if (!url) return null;
+            const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^?&]+)/);
+            return m ? m[1] : null;
+        }
+        function vimeoId(url) {
+            if (!url) return null;
+            const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+            return m ? m[1] : null;
+        }
+        function parseStart(vs) {
+            if (!vs) return 0;
+            const s = String(vs);
+            return s.includes(':') ? s.split(':').reduce((a, v) => a * 60 + parseFloat(v), 0) : parseFloat(s) || 0;
+        }
+
+        function cardMedia(p) {
+            const tip = '';
+            const yt = ytId(p.video);
+            if (yt) {
+                const start = parseStart(p.videoStart);
+                return `<div class="video-container" data-type="youtube">
+                    <iframe src="https://www.youtube.com/embed/${yt}?enablejsapi=1&mute=1${start ? '&start=' + Math.floor(start) : ''}" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                        allowfullscreen></iframe>
+                    ${tip}
+                </div>`;
+            }
+            const vi = vimeoId(p.video);
+            if (vi) {
+                const start = parseStart(p.videoStart);
+                return `<div class="video-container" data-type="vimeo">
+                    <iframe src="https://player.vimeo.com/video/${vi}?api=1&muted=1&background=1${start ? '&t=' + Math.floor(start) + 's' : ''}" frameborder="0"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen></iframe>
+                    ${tip}
+                </div>`;
+            }
+            if (p.video) {
+                return `<div class="video-container">
+                    <video src="${p.video}" preload="metadata" loop muted playsinline></video>
+                    <div class="video-overlay"></div>
+                    ${tip}
+                </div>`;
+            }
+            if (p.image) {
+                return `<div class="video-container">
+                    <img src="${p.image}" alt="${p.title}" loading="lazy">
+                    <div class="video-overlay"></div>
+                    ${tip}
+                </div>`;
+            }
+            if (p.embed) {
+                return `<div class="video-container">
+                    <iframe src="${p.embed}" frameborder="0" loading="lazy"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                        allowfullscreen></iframe>
+                    ${tip}
+                </div>`;
+            }
+            return `<div class="video-container">${tip}</div>`;
+        }
+
+        function renderProjects() {
+            const q = searchInput.value.trim().toLowerCase();
+            const filtered = pageProjects.filter(p => {
+                if (activeTags.size > 0 && !p.tags.some(t => activeTags.has(t))) return false;
+                if (!q) return true;
+                return [p.title, p.description, p.type, p.institution, p.tags.join(' ')].join(' ').toLowerCase().includes(q);
+            });
+
+            if (filtered.length === 0) {
+                projectsGrid.innerHTML = '';
+                emptyState.classList.add('active');
+                emptyState.querySelector('h3').textContent =
+                    activeTags.size > 0 ? 'No items in this category' : 'No projects found';
+                emptyState.querySelector('p').textContent =
+                    activeTags.size > 0
+                        ? 'None of the selected tags have items in this view'
+                        : 'Try adjusting your filters';
+                return;
+            }
+            emptyState.classList.remove('active');
+
+            projectsGrid.innerHTML = filtered.map((p, i) => `
+                <div class="project-card" data-color="magenta" data-videostart="${p.videoStart || 0}" style="animation-delay:${i * 0.03}s">
+                    ${cardMedia(p)}
+                    ${p.description ? `<div class="card-tooltip">${p.description}</div>` : ''}
+                    <div class="project-info">
+                        <div class="project-category">${p.type || p.category}</div>
+                        <h3 class="project-title">${p.detailPage ? `<a href="${p.detailPage}" target="_blank" rel="noopener"><span>${p.title}</span></a>` : `<span>${p.title}</span>`}</h3>
+                        ${p.institution ? `<p class="project-meta">${p.institution}${p.year ? ' · ' + p.year : ''}</p>` : (p.year ? `<p class="project-meta">${p.year}</p>` : '')}
+                        <div class="project-tags">${p.tags.map(t => `<span class="project-tag">${t}</span>`).join('')}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            projectsGrid.querySelectorAll('.video-container').forEach(container => {
+                const video = container.querySelector('video');
+                if (video) {
+                    const start = parseStart(container.closest('.project-card').dataset.videostart);
+                    container.addEventListener('mouseenter', () => { video.currentTime = start; video.play(); container.classList.add('playing'); });
+                    container.addEventListener('mouseleave', () => { video.pause(); video.currentTime = start; container.classList.remove('playing'); });
+                    container.addEventListener('click', () => openModal(video.src));
+                }
+                const iframe = container.querySelector('iframe');
+                if (iframe) {
+                    const iStart = parseStart(container.closest('.project-card').dataset.videostart);
+                    const isVimeo = container.dataset.type === 'vimeo';
+                    if (isVimeo) {
+                        const vCmd = msg => iframe.contentWindow.postMessage(JSON.stringify(msg), '*');
+                        container.addEventListener('mouseenter', () => { if (iStart) vCmd({ method: 'setCurrentTime', value: iStart }); vCmd({ method: 'play' }); });
+                        container.addEventListener('mouseleave', () => vCmd({ method: 'pause' }));
+                    } else {
+                        const ytCmd = (fn, args = []) => iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: fn, args }), '*');
+                        container.addEventListener('mouseenter', () => { if (iStart) ytCmd('seekTo', [iStart, true]); ytCmd('playVideo'); });
+                        container.addEventListener('mouseleave', () => ytCmd('pauseVideo'));
+                    }
+                }
+                const img = container.querySelector('img');
+                if (img) {
+                    container.addEventListener('mousemove', e => {
+                        const r = container.getBoundingClientRect();
+                        const x = (e.clientX - r.left) / r.width - 0.5;
+                        const y = (e.clientY - r.top) / r.height - 0.5;
+                        img.style.transform = `translate(${x * 14}px, ${y * 10}px) scale(1.06)`;
+                    });
+                    container.addEventListener('mouseleave', () => { img.style.transform = ''; });
+                }
+            });
+
+            projectsGrid.querySelectorAll('.project-link').forEach(l => l.addEventListener('click', e => e.stopPropagation()));
+            if (window.addHoverCursor) window.addHoverCursor('.project-card, .video-container');
+        }
+
+        const _modal = document.createElement('div');
+        _modal.className = 'video-modal';
+        _modal.innerHTML = `<div class="video-modal-inner">
+            <button class="video-modal-close" aria-label="Close">×</button>
+            <video controls playsinline></video>
+        </div>`;
+        document.body.appendChild(_modal);
+        const _mPlayer = _modal.querySelector('video');
+        const _mClose  = _modal.querySelector('.video-modal-close');
+        function openModal(src) { _mPlayer.src = src; _modal.classList.add('active'); _mPlayer.play(); }
+        function closeModal()   { _modal.classList.remove('active'); _mPlayer.pause(); _mPlayer.src = ''; }
+        _mClose.addEventListener('click', closeModal);
+        _modal.addEventListener('click', e => { if (e.target === _modal) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        generateTagFilters();
+        renderProjects();
+    </script>
+    <script src="cursor.js"></script>
+</body>
+</html>
