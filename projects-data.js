@@ -14,11 +14,11 @@ const projects = [
             "ai",
             "phygital"
         ],
-        "video": "videos\\PhygitalCocreation_viktoriaSandor.mov",
+        "video": "https://pub-6f1f448701a747e7a713d859704dce6c.r2.dev/PhygitalCocreation_viktoriaSandor.mov",
         "image": "",
         "embed": "",
         "videoStart": "",
-        "detailPage": "projects/hybrid-planner.html",
+        "detailPage": "https://doi.org/10.14627/537754004",
         "year": "2025",
         "type": "co-creation tool, journal publication",
         "institution": "JODLA Digital Landscape Architecture",
@@ -97,7 +97,7 @@ const projects = [
             "tool",
             "ai"
         ],
-        "video": "videos\\lca miro.MOV",
+        "video": "https://pub-6f1f448701a747e7a713d859704dce6c.r2.dev/lca%20miro.MOV",
         "image": "",
         "embed": "",
         "videoStart": "",
@@ -140,7 +140,7 @@ const projects = [
             "workshop",
             "ai"
         ],
-        "video": "videos\\streetswap.mp4",
+        "video": "https://pub-6f1f448701a747e7a713d859704dce6c.r2.dev/streetswap.mp4",
         "image": "",
         "embed": "",
         "videoStart": "",
@@ -201,7 +201,8 @@ const projects = [
         "tags": [
             "computational design",
             "ar",
-            "demourban planning",
+            "demo",
+            "urban planning",
             "hackathon",
             "ai",
             "interoperation",
@@ -404,7 +405,7 @@ const projects = [
             "point cloud notation",
             "encoding"
         ],
-        "video": "videos\\collapsing complexities_.mp4",
+        "video": "https://pub-6f1f448701a747e7a713d859704dce6c.r2.dev/collapsing%20complexities_.mp4",
         "image": "",
         "embed": "",
         "videoStart": "",
@@ -470,7 +471,7 @@ const projects = [
             "tool",
             "volumetric design"
         ],
-        "video": "videos\\VideoClouder5.mp4",
+        "video": "https://pub-6f1f448701a747e7a713d859704dce6c.r2.dev/VideoClouder5.mp4",
         "image": "",
         "embed": "",
         "videoStart": "00:04",
@@ -515,7 +516,7 @@ const projects = [
             "ai",
             "point cloud notation"
         ],
-        "video": "videos\\FinalMovie05.mp4",
+        "video": "https://pub-6f1f448701a747e7a713d859704dce6c.r2.dev/FinalMovie05.mp4",
         "image": "",
         "embed": "",
         "videoStart": "00:35",
@@ -632,7 +633,7 @@ const projects = [
 const aboutContent = {
     "bio": [
         "I am an architect and researcher working at the intersection of design, technology, and urban systems. My work focuses on how computational tools—from digital twins to emerging forms of agentic AI—can support new ways of understanding, shaping, and maintaining our built environment.",
-        "I am particularly interested in how technology can enhance communication: between people, between disciplines, and increasingly between humans and machines. Rather than simplifying complexity, I see these tools as a way to engage with it—making the layered, dynamic nature of cities more accessible and actionable.",
+        "I am particularly interested in how technology can enhance design communication: between people, between disciplines, and increasingly between humans and machines. Rather than simplifying complexity, I see these tools as a way to engage with it—making the layered, dynamic nature of cities more accessible and actionable.",
         "Cities, to me, are spaces of accumulation: of histories, infrastructures, cultures, and relationships. I am interested in how we can sustain this diversity—social, cultural, and physical—while developing new design methods that operate across scales, from buildings to territories.",
         "My current work explores early-stage design processes that integrate environmental, mobility, and spatial intelligence. At the same time, I am drawn to questions of co-creation and co-design: how we can move away from rigid methodologies and instead create frameworks that bring us closer to each other, and to the spaces we inhabit.",
         "I am inspired by thinkers and practitioners such as Shannon Mattern, Dark Matter Labs, David Deutsch, Sarah Walker, Bret Victor and Ursula K. Le Guin (just to mention a few)—voices that engage deeply with systems, knowledge, and alternative ways of thinking about the world.",
