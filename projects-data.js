@@ -37,8 +37,8 @@ const projects = [
             "interoperation",
             "simulation"
         ],
-        "video": "",
-        "image": "videos\\vitality.gif",
+        "video": "https://pub-6f1f448701a747e7a713d859704dce6c.r2.dev/vitality.mp4",
+        "image": "",
         "embed": "",
         "videoStart": "",
         "detailPage": "https://klimaneutralestadt.at/de/projekte/tiks/vitality-city.php",
